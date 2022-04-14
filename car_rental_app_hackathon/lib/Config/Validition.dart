@@ -1,14 +1,12 @@
-
-
 import 'package:car_rental_app_hackathon/Config/constants.dart';
 
 validtionConstantName(String name) {
-  List<dynamic> toReturn = [true, ""]; 
+  List<dynamic> toReturn = [true, ""];
   if (name.isEmpty) {
     toReturn[1] = kEmailNullError;
-  } else if (name.length < 2) {
+  } else if (name.length < 1) {
     toReturn[1] = kShortNameError;
-  }else{
+  } else {
     toReturn[0] = false;
   }
 
@@ -16,12 +14,12 @@ validtionConstantName(String name) {
 }
 
 validtionConstantEmail(String email) {
-  List<dynamic> toReturn = [true, ""]; 
+  List<dynamic> toReturn = [true, ""];
   if (email.isEmpty) {
     toReturn[1] = kEmailNullError;
   } else if (!(email.contains(emailValidatorRegExp))) {
     toReturn[1] = kInvalidEmailError;
-  }else{
+  } else {
     toReturn[0] = false;
   }
 
@@ -29,12 +27,12 @@ validtionConstantEmail(String email) {
 }
 
 validtionConstantPassword(String password) {
-  List<dynamic> toReturn = [true, ""]; 
+  List<dynamic> toReturn = [true, ""];
   if (password.isEmpty) {
     toReturn[1] = kEmailNullError;
   } else if (password.length < 6) {
     toReturn[1] = kShortPassError;
-  }else{
+  } else {
     toReturn[0] = false;
   }
 

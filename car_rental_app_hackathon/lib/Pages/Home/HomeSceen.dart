@@ -1,15 +1,41 @@
 import 'dart:ffi';
 
+import 'package:car_rental_app_hackathon/API/API_Route.dart';
+import 'package:car_rental_app_hackathon/API/getApi.dart';
 import 'package:car_rental_app_hackathon/Components/AppBar/Appbar.dart';
 import 'package:car_rental_app_hackathon/Components/Custom/Cards/Product/GridCard.dart';
 import 'package:car_rental_app_hackathon/Config/size_config.dart';
+import 'package:car_rental_app_hackathon/Model/CategoriesModel.dart';
+import 'package:car_rental_app_hackathon/Pages/Details/Components/CategoriesCard.dart';
 import 'package:car_rental_app_hackathon/Pages/Home/Components/ProductGrid.dart';
 import 'package:car_rental_app_hackathon/Pages/Home/Components/SearchCar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<CategoriesModel> categories = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
+
+  getData() async {
+    for (var item in (await getApi(api_GET_Categories))) {
+      setState(() {
+        categories.add(CategoriesModel.fromJson(item));
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +51,7 @@ class HomeScreen extends StatelessWidget {
           child: Builder(
             builder: (context) => IconButton(
               icon: SvgPicture.asset(
-                'assets/images/icons/menuLight.svg',
+                'assets/images/icons/menu.svg',
                 color: Colors.black,
               ),
               onPressed: () {},
@@ -79,7 +105,7 @@ class HomeScreen extends StatelessWidget {
                   left: getSize(true, .1),
                 ),
                 child: Text(
-                  "23 Result",
+                  "${categories.length} Result",
                   style: TextStyle(fontSize: 20),
                 ),
               ),

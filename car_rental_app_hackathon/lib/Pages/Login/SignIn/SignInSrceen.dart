@@ -1,11 +1,16 @@
 // ignore_for_file: file_names
 
+import 'package:car_rental_app_hackathon/API/API_Route.dart';
+import 'package:car_rental_app_hackathon/API/getApi.dart';
 import 'package:car_rental_app_hackathon/Components/Custom/Button/ButtonColored.dart';
 import 'package:car_rental_app_hackathon/Components/Custom/TextFeild/PasswordFeild.dart';
 import 'package:car_rental_app_hackathon/Components/Custom/TextFeild/TextFeild_1.dart';
+import 'package:car_rental_app_hackathon/Config/Validition.dart';
 
 import 'package:car_rental_app_hackathon/Config/size_config.dart';
 import 'package:car_rental_app_hackathon/Model/TextFeildModel.dart';
+import 'package:car_rental_app_hackathon/Model/UserModel.dart';
+import 'package:car_rental_app_hackathon/Pages/Home/HomeSceen.dart';
 import 'package:car_rental_app_hackathon/Pages/Login/SignIn/ForgetPassword.dart';
 import 'package:car_rental_app_hackathon/Pages/Login/Signup_Signin.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +23,7 @@ class SignInSrceen extends StatefulWidget {
 }
 
 class _SignInSrceenState extends State<SignInSrceen> {
+  late List<UserModel> userList = [];
   List<TextFeildModel> controller = [];
   bool isError = false;
   bool wait = true;
@@ -27,13 +33,22 @@ class _SignInSrceenState extends State<SignInSrceen> {
     // TODO: implement initState
     super.initState();
     controller = [
-      TextFeildModel(label: "Email"),
+      TextFeildModel(label: "Usernmae"),
       TextFeildModel(label: "Password")
     ];
+
+    getData();
+  }
+
+  getData() async {
+    for (var item in (await getApi(api_GET_UserDetail))) {
+      userList.add(UserModel.fromJson(item));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(),
@@ -69,7 +84,7 @@ class _SignInSrceenState extends State<SignInSrceen> {
                       padding: EdgeInsets.symmetric(
                         vertical: getSize(false, .0125),
                       ),
-                      child: ButtonColored(function: () {}, text: "Login"),
+                      child: ButtonColored(function: onSigIn, text: "Login"),
                     ),
                     const Signup_Signin(isSignIN: false),
                   ],
@@ -85,57 +100,41 @@ class _SignInSrceenState extends State<SignInSrceen> {
         context, MaterialPageRoute(builder: (BuildContext context) => route));
   }
 
-  // onSiginClick() async {
-  //   var isEmail = validtionConstantEmail(controller[0].value);
-  //   var isPassword = validtionConstantPassword(controller[1].value);
+  onSiginClick() async {
+    var isEmail = validtionConstantEmail(controller[0].value);
+    var isPassword = validtionConstantPassword(controller[1].value);
 
-  //   if (isEmail[0]) {
-  //     setTextFeild(0, isEmail);
-  //   }
+    if (isEmail[0]) {
+      setTextFeild(0, isEmail);
+    }
 
-  //   if (isPassword[0]) {
-  //     setTextFeild(1, isPassword);
-  //   }
+    if (isPassword[0]) {
+      setTextFeild(1, isPassword);
+    }
 
-  //   if (!isError) {
-  //     setState(() {
-  //       wait = false;
-  //     });
-  //     onSigIn();
-  //   }
-  // }
+    if (!isError) {
+      setState(() {
+        wait = false;
+      });
+      onSigIn();
+    }
+  }
 
-  // setTextFeild(int index, var data) {
-  //   setState(() {
-  //     controller[index].isError = data[0];
-  //     controller[index].errorMessage = data[1];
-  //     isError = data[0];
-  //   });
-  // }
+  setTextFeild(int index, var data) {
+    setState(() {
+      controller[index].isError = data[0];
+      controller[index].errorMessage = data[1];
+      isError = data[0];
+    });
+  }
 
-  // onSigIn() async {
-  //   try {
-  //     UserCredential userCredential = await FirebaseAuth.instance
-  //         .signInWithEmailAndPassword(
-  //             email: controller[0].value, password: controller[1].value);
-
-  //     // UserInfoModel.thirdInfo(userCredential.user!.uid);
-
-  //     await getUser(userCredential.user!.uid);
-
-  //     Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(
-  //             builder: (BuildContext context) =>
-  //                 MainScreen())); // HomeScreen(user: userCredential.user!)));
-
-  //   } on FirebaseAuthException catch (e) {
-  //     if (e.code == 'user-not-found') {
-  //       alertBox1(context, "user Not Found", 'No user found for that email.');
-  //     } else if (e.code == 'wrong-password') {
-  //       alertBox1(context, "Wrong Password",
-  //           'Wrong password provided for that user.');
-  //     }
-  //   }
-  // }
+  onSigIn() {
+    for (var item in userList) {
+      if (item.uName == controller[0].value) {
+        if (item.password == controller[1].value) {
+          goToOtherRouter(const HomeScreen());
+        }
+      }
+    }
+  }
 }
